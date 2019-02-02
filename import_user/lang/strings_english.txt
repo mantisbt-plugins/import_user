@@ -11,5 +11,3 @@ $s_import_skip_first_line = 'Skip first file line';
 $s_import_file_button = 'Import file';
 $s_process_file_button = 'Process file';
 
-# Errors
-$MANTIS_ERROR[ERROR_IMPORT_FILE_FORMAT] = 'Imported file format is incorrect: %s';

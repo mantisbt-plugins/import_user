@@ -4,7 +4,7 @@ class import_userPlugin extends MantisPlugin {
 	function register() {
 		$this->name			= 'import_user' ;
 		$this->description	= 'import users from CSV file';
-		$this->version		= '1.0';
+		$this->version		= '1.03';
 		$this->requires   	= array('MantisCore'       => '2.0.0',);
 		$this->author		= 'Cas Nuy';
 		$this->contact		= '';

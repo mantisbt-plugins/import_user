@@ -13,22 +13,67 @@
 	$f_skip_first = gpc_get_bool( 'cb_skip_first_line' );     
     $f_separator = gpc_get_string('edt_cell_separator');     
     
-	
+
+/**
+ * Create a user.
+
+ */
+function user_create_bulk( $p_username, $p_password, $p_email = '',
+	$p_access_level = null, $p_protected = false, $p_enabled = true,
+	$p_realname = '', $p_admin_name = '', $p_send_email= 1 ) {
+	if( null === $p_access_level ) {
+		$p_access_level = config_get( 'default_new_account_access_level' );
+	}
+
+	$t_password = auth_process_plain_password( $p_password );
+
+	$c_enabled = (bool)$p_enabled;
+
+	user_ensure_name_valid( $p_username );
+	user_ensure_name_unique( $p_username );
+	user_ensure_email_unique( $p_email );
+	user_ensure_realname_unique( $p_username, $p_realname );
+	email_ensure_valid( $p_email );
+
+	$t_cookie_string = auth_generate_unique_cookie_string();
+
+	db_param_push();
+	$t_query = 'INSERT INTO {user}
+				    ( username, email, password, date_created, last_visit,
+				     enabled, access_level, login_count, cookie_string, realname )
+				  VALUES
+				    ( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param()  . ',
+				     ' . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ', ' . db_param() . ')';
+	db_query( $t_query, array( $p_username, $p_email, $t_password, db_now(), db_now(), $c_enabled, (int)$p_access_level, 0, $t_cookie_string, $p_realname ) );
+
+	# Create preferences for the user
+	$t_user_id = db_insert_id( db_get_table( 'user' ) );
+
+	# Users are added with protected set to FALSE in order to be able to update
+	# preferences.  Now set the real value of protected.
+	if( $p_protected ) {
+		user_set_field( $t_user_id, 'protected', (bool)$p_protected );
+	}
+
+	# Send notification email
+	if( $p_send_email==1 ) {
+		if( !is_blank( $p_email ) ) { 
+			$t_confirm_hash = auth_generate_confirm_hash( $t_user_id );
+			token_set( TOKEN_ACCOUNT_ACTIVATION, $t_confirm_hash, TOKEN_EXPIRY_ACCOUNT_ACTIVATION, $t_user_id );
+			email_signup( $t_user_id, $t_confirm_hash, $p_admin_name );
+		}
+	}
+
+	event_signal( 'EVENT_MANAGE_USER_CREATE', array( $t_user_id ) );
+
+	return $t_cookie_string;
+} 	
 	
 	# Check given parameters - File
 	$f_import_file = gpc_get_file( 'import_file', -1 ); 
 
 	$t_file_content = array();
-	if( file_exists( $f_import_file['tmp_name'] ) )
-	{
-		$t_file_content = file( $f_import_file['tmp_name'] );
-
-	}
-	else
-	{
-		error_parameters( lang_get( 'import_error_file_not_found' ) );
-		trigger_error( ERROR_IMPORT_FILE_FORMAT, ERROR );
-	};
+	$t_file_content = file( $f_import_file['tmp_name'] );
 
 	# Import file content
  
@@ -55,6 +100,7 @@
 		$f_access_level    = $t_file_row[4];
 		$f_protected       = FALSE;
 		$f_enabled         = TRUE; 
+		$f_sendmail		    = $t_file_row[5];
 
 		# check access level
 		$f_access_level = trim($f_access_level);
@@ -91,7 +137,7 @@
 		}
 		# adduser
 		$t_admin_name = user_get_name( auth_get_current_user_id() );
-		$t_cookie = user_create( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $f_realname, $t_admin_name );
+		$t_cookie = user_create_bulk( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $f_realname, $t_admin_name, $f_sendmail );
 		echo "User created : ".$f_username;
 		echo "<br>";
 	}

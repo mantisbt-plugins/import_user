@@ -38,7 +38,10 @@ Password
 Access Level 
 	Use the number value here ( see below)
 	If omitted, default will be 10 (VIEWER)
-
+Send email
+	0 =  do not send email
+	1 =  Send email
+	
 User accounts will default to:
  -Not Protected
  -Enabled
