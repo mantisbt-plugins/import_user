@@ -40,7 +40,7 @@ Email address
 Password 
 Access Level 
 	Use the number value here ( see below)
-	If omitted, default will be 10 (VIEWER)
+	If omitted, default value for new accounts will be used
 Send email
 	0 =  do not send email
 	1 =  Send email
