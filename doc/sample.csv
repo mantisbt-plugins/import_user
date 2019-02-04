@@ -1,3 +1,5 @@
-username,realname,email,password,level
+username,realname,email,password,level,email
 tr1000,mexican guy,mexican.guys@gmail.com,12345,40,0
 tr10020,mexican1 guy,mexican3.guys@gmail.com,12345,40,0
+xx10020,mexican2 guy,mexican4.guys@gmail.com,12345,40,0
+xx10021,mexican3 guy,mexican5.guys@gmail.com,12345,40,0
