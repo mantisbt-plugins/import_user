@@ -1,0 +1,13 @@
+<?php
+
+# Custom strings for english language
+$s_user_import_title		= "Mantis CSV Import Users" ;
+$s_import_file_format_col_spacer = 'CSV column separator';
+$s_import_skip_blank_lines = 'Skip empty lines';
+$s_manage_import_users_link = 'Import Users from CSV file';
+$s_manage_import_users = 'CSV Users importing';
+$s_import_users_file = "Import Users from CSV file";
+$s_import_skip_first_line = 'Skip first file line';
+$s_import_file_button = 'Import file';
+$s_process_file_button = 'Process file';
+
